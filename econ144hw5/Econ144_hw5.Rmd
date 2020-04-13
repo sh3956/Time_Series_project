@@ -1,0 +1,375 @@
+---
+title: "Econ144_hw5"
+author: "Sijia Hua"
+date: "6/3/2019"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup}
+library("readxl")
+library(forecast)
+library(tseries) 
+library("TSA")
+library("fpp2")
+library(MLmetrics) # use RMSE
+library(dplyr)
+library(ggplot2)
+library(AnalyzeTS)
+library(Hmisc)
+```
+
+
+1. Problem 7.8 (i.e., Chapter 7, Problem 8) from Textbookc.
+Recall your retail time series data (from Exercise 3 in Section 2.10).
+(1)Why is multiplicative seasonality necessary for this series?
+```{r 7.8c (1)}
+setwd("/Users/Renaissance/Desktop")
+retaildata <- readxl::read_excel("retail.xlsx", skip = 1)
+ts_food <- ts(retaildata[,"A3349398A"],frequency=12, start=c(1982,4))
+
+ts_food %>% decompose(type="multiplicative") %>%autoplot()
+ 
+```
+Yes, multiplicative seasonality is necessary. There are obvious seasonal factors. 
+(2)Apply Holt-Winters’ multiplicative method to the data. Experiment with making the trend damped.
+```{r 7.8c(2)}
+# use Holt-Winters with forecast 35 steps
+fit_food <- hw(ts_food, damped = TRUE, seasonal = "multiplicative", h = 35)
+fit_undamp <- hw(ts_food, damped = FALSE, seasonal = "multiplicative", h = 35)
+autoplot(ts_food) +
+  autolayer(fit_food, series = "HW multi damped", PI = FALSE)+
+  autolayer(fit_undamp, series = "HW multi undamped", PI = FALSE)+
+  guides(colour=guide_legend(title="damped forecasts"))
+```
+(3)Compare the RMSE of the one-step forecasts from the two methods. Which do you prefer?
+```{r 7.8c(3)}
+damp_onestep <- hw(ts_food, damped = TRUE, seasonal = "multiplicative", h = 1)
+undamp_onestep <- hw(ts_food, damped = FALSE, seasonal = "multiplicative", h = 1)
+accuracy(damp_onestep)
+accuracy(undamp_onestep)
+```
+RMSE of damped is 29.63
+RMSE of undamped is 29.43. Hence, from RMSE, undamped works better.
+
+(4)Check that the residuals from the best method look like white noise.
+```{r 7.8c(4)}
+autoplot(fit_undamp$residuals) #which looks like white noise
+# check for acf 
+Acf(fit_undamp$residuals)
+```
+Residual of the best method looks like white noise, but the magnitude before 2000 seems bigger than that after 2000. After checking Acf, it is not a white noise. 
+(5)Now find the test set RMSE, while training the model to the end of 2010. Can you beat the seasonal naïve approach from Exercise 8 in Section 3.7?
+```{r 7.8c(5)}
+# set up train set and test set
+train_food <- window(ts_food, end = c(2010, 12))
+test_food <- window(ts_food, start = c(2011, 1))
+# three forecast methods of training set 
+snaive_train <- snaive(train_food, h = 36)
+damp_train <- hw(train_food, damped = TRUE, seasonal = "multiplicative", h = 36)
+undamp_train <- hw(train_food, damped = FALSE, seasonal = "multiplicative", h = 36)
+
+autoplot(test_food, series = "True Vale") +
+  autolayer(snaive_train, series = "Seasonal Naive", PI = FALSE) +
+  autolayer(damp_train, series = "Holt-Winter's damp forecast", PI = FALSE) +
+  autolayer(undamp_train, series = "Holt-Winter's undamped forecast", PI = FALSE) +
+  ggtitle ('Test Set Forecast')
+
+RMSE(test_food, snaive_train$mean)
+RMSE(test_food, damp_train$mean)
+RMSE(test_food, undamp_train$mean)
+  
+```
+By comparing, Undamped Holt-Winter multiplicative process gives a better approximation. It beats the seasonal naive approach. 
+
+2. Problem 7.10 (i.e., Chapter 7, Problem 10) from Textbookc.
+(1)For this exercise use data set ukcars, the quarterly UK passenger vehicle production data from 1977Q1–2005Q1.
+Plot the data and describe the main features of the series.
+```{r 7.10c(1)}
+autoplot(ukcars) +
+  ggtitle("UK Passenger Vehicle Production")
+```
+There is a decreasing trend before 1980, followed by a continuously increasing trend to 2000. From 2000 to 2005, some fluctuations appear. This data set has strong seasonal factors. 
+
+(2)Decompose the series using STL and obtain the seasonally adjusted data.
+```{r 7.10(2)}
+stl_ukcars <- stl(ukcars, s.window = "periodic")
+ukcars_sadj <- stl_ukcars$time.series[,2]
+autoplot(ukcars_sadj) # after seasonal adjusted
+```
+
+(3)Forecast the next two years of the series using an additive damped trend method applied to the seasonally adjusted data. (This can be done in one step using stlf() with arguments etsmodel="AAN", damped=TRUE.)
+```{r 7.10(3)}
+pred_sadj <- stlf(ukcars_sadj, etsmodel = "AAN", damped = TRUE, h = 8)
+
+autoplot(pred_sadj) + 
+  xlab("year") + 
+  ylab("Vehicle Production")
+
+```
+
+(4)Forecast the next two years of the series using Holt’s linear method applied to the seasonally adjusted data (as before but with damped=FALSE).
+```{r 7.10(4)}
+hw_uk <- holt(ukcars_sadj, h = 8, damped=FALSE)
+autoplot(hw_uk) + 
+  xlab("year") + 
+  ylab("Vehicle Production")
+
+```
+
+(5)Now use ets() to choose a seasonal model for the data.
+```{r 7.10(5)}
+ukcars_sadj %>% forecast(h = 8) %>%
+  autoplot() + 
+  xlab("year") + 
+  ylab("Vehicle Production")
+```
+(6)Compare the RMSE of the ETS model with the RMSE of the models you obtained using STL decompositions. Which gives the better in-sample fits?
+```{r 7.10(6)}
+ets_uk <- forecast(ukcars_sadj, h = 8) # by ets
+
+RMSE(pred_sadj$fitted, ukcars_sadj) # 6.86 by stlf
+RMSE(ets_uk$fitted, ukcars_sadj) # 6.96 by ets
+
+```
+By compring RMSE, stl gives a better in-sample fits. 
+
+(7)Compare the forecasts from the three approaches? Which seems most reasonable?
+Check the residuals of your preferred model.
+```{r 7.10(7)}
+# check for accuracy 
+accuracy(pred_sadj)
+accuracy(ets_uk)
+# check the residual of stl 
+plot(pred_sadj$residuals, type = "p", ylab = "Residual of STL forecast")
+abline(a = 0, b = 0)
+
+```
+By obsering the graphs, stl and ets gives more reasonable forecasts, since they are relatively smoother than the prediciton by Holt's linear. Holt's linear's prediction seems a stright linear line without considering trend. After comparing the RMSE, ME, MAE of stl and ets, stl is preferred. The residual plot of stl is randomly distributed and bounce between the line y = 0, with two outliers located at the top left and bottom left of the residual plot. Hence, we can say stl is an appropriate fit model for uk vehicle productions time series. 
+
+3.
+(a)Update the time series of the SP500 index in Section 14.1 and comment on the volatility of recent times compared to that of past times. 
+```{r 14.3_a}
+setwd("/Users/Renaissance/Desktop")
+sp500 <- read_xls("hw5_14a.xls")
+# I choose to use close price of sp500
+# extract close and open price
+sp500_close <- sp500[, c("Close")]
+sp500_open <- sp500[, c("Open")]
+# calculate volatility 
+# I set the window to 20 days
+n <- dim(sp500)[1]
+num_window  <- floor(n/ 20) # how many sets have 20 days
+last_size <- dim(sp500)[1] %% 20 # the size of last set
+vol_sp500 <- data.frame(vector(mode = "numeric", length = n))
+colnames(vol_sp500) <- c("volatility")
+
+for (i in 1: num_window){
+  subset <- sp500_close[(20*(i-1)+1):(20*i),]
+  mean_20 <- mean(unlist(subset))
+  std_20 <- sd(unlist(subset))
+  vol <- sum( (subset - mean_20)^2)/ 20
+  vol_sp500[(20*(i-1)+1):(20*i), ] <- vol
+}
+
+subset <- sp500_close[(num_window*20+1):n, ]
+mean_20 <- mean(unlist(subset))
+std_20 <- sd(unlist(subset))
+vol <- sum( (subset - mean_20)^2)/ last_size
+vol_sp500[(num_window*20+1):n, ] <- vol  
+
+vol_ts <- ts(vol_sp500, 2000, 2013, frequency = 258)
+autoplot(vol_ts)
+
+# Comment: By observing Volatility in recent years is more volatile than past. 
+
+```
+Comment: By observing Volatility graph in recent years,  is more volatile than past. 
+
+3.(b)Compute the autocorrelation functions of returns and squared returns. 
+```{r 14.3(b)}
+##calcualte log returns 
+sp500_lrtrn <- log(sp500_close/ sp500_open) 
+ts_lrtrn <- ts(sp500_lrtrn, 2000, 2013, frequency = 258)
+tsdisplay(ts_lrtrn, lag.max = 40)
+##calculate square returns
+sp500_sqr <- sp500_lrtrn^2
+ts_sqr <- ts(sp500_sqr, 2000, 2013, frequency = 258)
+tsdisplay(ts_sqr, lag.max = 40)
+acf(sp500_lrtrn)
+acf(sp500_sqr)
+
+```
+There are signal of seasonality in the return and squared return. All acf values are significant in tbe acf of squared return. 
+
+3.(c)Find the best ARCH process to model the volatility of the index. Could you find an equivalent more parsimonious GARCH process?
+```{r 14.3(c)}
+# conduct a box test to see whether volatility is predictable
+Box.test(vol_sp500, lag = 1) # not white noise
+
+a_vol <- garch(x = vol_sp500, order = c(0, 8), trace = TRUE)
+AIC(a_vol)
+summary(a_vol)  
+x_ts <- seq(2000, 2013, length = n)
+afit <- data.frame(x_ts, a_vol$fitted.values[, 1], vol_sp500)
+colnames(afit) <- c("Date", "arch fitted volatility", "volatility")
+afit <- na.omit(afit)
+
+ggplot(afit, aes(Date)) +
+  geom_line(aes(y = `arch fitted volatility`, color = "blue")) +
+  geom_line(aes(y = afit$volatility, color = "black")) +
+  ggtitle("Arch Fitted Volatility") +
+  scale_color_discrete(name = "Arch fit & real volatility", labels = c("real", "arch"))
+
+
+g_vol <- garch(x = vol_sp500, order = c(1, 1))
+AIC(g_vol) 
+summary(g_vol) # garch(1,2) works well as arch(11)
+gfit <- data.frame(x_ts, g_vol$fitted.values[, 1], vol_sp500)
+colnames(gfit) <- c("Date", "garch fitted volatility","volatility")
+gfit <- na.omit(gfit)
+
+ggplot(gfit, aes(Date)) +
+  geom_line(aes(y = `garch fitted volatility`, color = "blue")) +
+  geom_line(aes(y = gfit$volatility, color = "black")) +
+  ggtitle("Garch Fitted Volatility") +
+  scale_color_discrete(name = "Garch fit & real volatility", labels = c("real", "garch"))
+
+```
+For volatility, garch(1,1) works similar as arch(8), which is the most accurate arch model for this volatility. 
+
+4. Based on your findings from Exercise 3, calculate the one and two‐step ahead volatility forecasts. Construct a 95% interval forecast for the SP500 returns. Assume that the returns are conditionally normal distributed.
+
+```{r 14.4}
+# one- step ahead volatility of garch
+z <- rnorm(1) # random number follow normal distribution
+sigma_last <- var(g_vol$fitted.values[,1], na.rm=TRUE)
+sigma <- sqrt(g_vol$coef[1] + g_vol$coef[2]*(g_vol$residuals[3355])^2 + g_vol$coef[3]*sigma_last)
+gf_step1 <- g_vol$fitted.values[,1][3355] + sigma*z 
+print("After calculating, one step forecast of garch(1,1) is ")
+print(gf_step1)
+
+z2 <- rnorm(1) # random number follow normal distribution
+f1_data <- c(g_vol$fitted.values[,1], gf_step1)
+sigma_f1 <- var(f1_data, na.rm=TRUE)
+sigma_2 <- sqrt(g_vol$coef[1] + (g_vol$coef[2] + g_vol$coef[3])*sigma_f1)
+gf_step2 <- gf_step1 + sigma_2*z2
+print("After calculating, two step forecast of garch(1,1) is ")
+print(gf_step2)
+
+# try to forecast return for 20 steps ahead
+return_forecast <- forecast(unlist(sp500_lrtrn), h = 2)
+autoplot(return_forecast) +
+  xlim(3200, 3360) # set the window to have a better observation on the forecast
+
+
+```
+
+
+
+
+5. In Exercise 5 of Chapter 13, you downloaded the time series of US CPI and GDP and constructed the inflation rate and GDP growth. For each, calculate the unconditional mean, and compute the 1‐step‐ahead volatility forecast by implementing the best (G)ARCH model, and construct the corresponding 95% interval forecast.
+```{r 14.5}
+setwd("/Users/Renaissance/Desktop")
+# read cpi and gdp data
+cpi <- read_xls("hw5_14a.xls", sheet = 2)
+gdp <- read_xls("hw5_14a.xls", sheet = 3)
+cpi <- cpi[,c(1,2)]  
+gdp <- gdp[,c(1,2)]  #eliminate nan
+
+cpi_ts <- ts(cpi[,2],start = c(1947,1), end = c(2013,3), frequency = 12)
+gdp_ts <- ts(gdp[,2],start = c(1947,1), end = c(2013,3), frequency = 12)
+
+# inflation
+cpi_value <- unlist(cpi[,2])
+inflation <- (cpi_value - Lag(cpi_value, 1))/ Lag(cpi_value, 1)
+# GDP growth
+gdp_value <- unlist(gdp[,2])
+growth <- (gdp_value - Lag(gdp_value, 1))/ Lag(gdp_value, 1)
+
+# calculate the unconditional mean
+print("The unconditional mean of cpi is ")
+print(mean(cpi[,2]))
+print("The unconditional mean of gdp is ")
+print(mean(gdp[,2]))
+
+# fit garch 
+inflation_nonan <- na.omit(inflation)
+g_inflation <- garch(x = inflation_nonan, order = c(1, 1))
+summary(g_inflation)
+paste("In this cast, garch(1,1) gives the best fit")
+
+# one step ahead forecast
+z_cpi <- rnorm(1) # random number follow normal distribution
+sigma_last_cpi <- var(g_inflation$fitted.values[,1], na.rm=TRUE)
+sigma_cpi <- sqrt(g_inflation$coef[1] + g_inflation$coef[2]*(g_inflation$residuals[794])^2 + g_inflation$coef[3]*sigma_last_cpi)
+gf_step1_cpi <- g_inflation$fitted.values[,1][794] + sigma_cpi*z_cpi
+print("After calculating, one step forecast of garch(1,1) is ")
+print(as.numeric(gf_step1_cpi))
+print("The 95% interval of this one step ahead forecast is between :")
+print(as.numeric(gf_step1_cpi - 1.96*sigma_cpi))
+print(" and ")
+print(as.numeric(gf_step1_cpi +1.96*sigma_cpi))
+
+```
+
+6. Given this expression, retrieve the residuals and construct the 1‐step‐ahead volatility forecast by implementing the best (G)ARCH model. Construct the corresponding 95% interval forecast for inflation and GDP growth, and compare these intervals with those from Exercise 5.
+
+```{r 14.6}
+tsdisplay(inflation) # view the inflation rate (from cpi)
+arimafit <- auto.arima(inflation)
+inflation_resi <- arimafit$residuals# retrieve the residual
+
+tsdisplay(growth) # view the growth rate (from gdp)
+arimafit_growth <- auto.arima(gdp_ts)
+growth_resi <- arimafit_growth$residuals# retrieve the residual
+
+# garch fit of inflation residual
+g_ir<- garch(x = inflation_resi, order = c(1, 1))
+summary(g_ir)   # garch (1, 1) gives the best fit
+
+# garch fit of gdp growth residual
+g_gr<- garch(x = growth_resi, order = c(0, 1))
+summary(g_gr)  # arch (0, 1) gives the best fit
+
+
+# one-step ahead forecast of garch in inflation residual
+z_in <- rnorm(1) # random number follow normal distribution
+sigma_last_in <- var(g_ir$fitted.values[,1], na.rm=TRUE) # last sigma 
+sigma_in <- sqrt(g_ir$coef[1] + g_ir$coef[2]*(g_ir$residuals[794])^2 + g_ir$coef[3]*sigma_last_in) # sigma at this time
+gf_step1_in <- g_ir$fitted.values[,1][794] + sigma_in*z_in # forecast 1 step
+print("After calculating, one step forecast of garch(1,1) of inflation residual is ")
+print(as.numeric(gf_step1_in))
+print("The 95% interval of this one step ahead forecast is between :")
+print(as.numeric(gf_step1_in - 1.96*sigma_in))
+print(" and ")
+print(as.numeric(gf_step1_in +1.96*sigma_in))
+
+# one-step ahead forecast of arch in growth rate reisudal
+z_gr <- rnorm(1)
+meanfit_gr <- mean(g_gr$fitted.values[,1], na.rm = TRUE)
+sigma_last_gr <- (g_gr$fitted.values[,1][794] - meanfit_gr)^2 # last sigma
+sigma_gr <- sqrt(g_gr$coef[1] + g_gr$coef[2]*sigma_last_gr) # sigma at this time
+gf_step1_gr <- g_gr$fitted.values[,1][794] + sigma_gr*z_gr  # forecast 1 step
+print("After calculating, one step forecast of garch(1,1) of growthrate residual is ")
+print(as.numeric(gf_step1_gr))
+print("The 95% interval of this one step ahead forecast is between :")
+print(as.numeric(gf_step1_gr - 1.96*sigma_gr))
+print(" and ")
+print(as.numeric(gf_step1_gr +1.96*sigma_gr))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+

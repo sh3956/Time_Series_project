@@ -1,0 +1,213 @@
+---
+title: "Econ144_hw4"
+author: "Sijia Hua"
+date: "5/18/2019"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+require(graphics)
+library(forecast)
+library(tseries)
+library(vars)
+library("readxl")
+library('Quandl')
+library(dynlm)
+library(minpack.lm)
+library(MLmetrics)
+library(Hmisc)
+```
+
+## Data set up
+#### I download the most recent data from Freddie Mac House, and organized it. 
+```{r data setup}
+setwd("/Users/Renaissance/Desktop")
+data_new <- read_xls("11.xls")
+# read the most recent data set
+data_recent <- read_xls("MSAs_SA.xls")
+data_recent <- data_recent[c(-1:-4),]
+# data for Albany
+data_a <- data_recent[c(6)]
+data_recent2 <- read_xls("MSAs_SA.xls",sheet = 2)
+data_recent2 <- data_recent2[c(-1:-4),]
+# data for SF and SJ
+data_ss <- data_recent2[c(98,99)]
+# combine data of AS,SF,SJ
+data_three <- cbind(data_recent[c(1)],data_a,data_ss)
+data_three <- na.omit(data_three)
+# construct a data frame of quarterly data
+data_three2 <- data.frame()
+data_three2 <- c(data_three[1,])
+
+## convert new monthly data into quarterly by choosing tthe data of one quarter's last month
+for (i in 1:177)
+{
+  data_three2<- rbind (data_three2,data_three[1+3*i,])
+}
+```
+
+## 11.1
+### descrption: This is the Freddie Mac House Price Index data obtained from Freddie Mac. It is a measure of typical price inflation for houses within the United States. The data begins in 1975 and collects each month. For 11.1, I choose Santa Jose and San Franciso to do the comparision. 
+```{r 11.1 a}
+# create a function for finding growth rate
+findg<-function(data)
+{
+  g <- (as.numeric(data)/Lag(as.numeric(data),1)-1)*100
+  g <- na.omit(g)
+}
+# construct a data frame of growth rate in these three area
+gr <- apply(data_three2,2,findg)
+grdf <- cbind(gr$...98,gr$...99)
+colnames(grdf)<-c("SF","SJ")
+
+# seperate train set and test set
+train_gr <- grdf[1:155, ]
+test_gr <- grdf[156:176,]
+# fit a var model
+var_s=VAR(train_gr,p=2)
+summary(var_s)
+AIC(var_s)
+BIC(var_s)
+```
+### As the summary provided above, Var(2) is the best model to represent the relationship of the house price growth rates in this two cities, with AIC, BIC = 537.6087, 567.9131. For SF, only the lag 1 of SF has significance. For SJ, both two lags of SF and SJ have significant influences on current SJ housing price growth. 
+
+## 11.2
+```{r gtest}
+# test if SJ affects SF. H0: SJ doesn't cause SF
+grangertest(train_gr[,1] ~ train_gr[,2], order = 2)
+# we fail to reject H0 
+
+# test if SF affects SJ. H0: SF doesn't affect SJ
+grangertest(train_gr[,2] ~ train_gr[,1], order = 2)
+# we can reject H0
+
+```
+### From the granger causality test of order 2, we can see that the growth in SJ doesn't cause the growth in SF, but the growth in SF does cause the growth in SJ. 
+
+## 11.3
+```{r ir-function}
+# plot impulse response function
+plot(irf(var_s))
+
+```
+### In first graph, the growth rate change in SF initially gives a large effect on both SJ and SF, and then decays slowly, and last over 10 quarters. In second graph, the growth rate change in SJ doesn't affect SF so much, and affects itself larger at first and then decays to negative. More job oppurtunies in SF but the housing is relatively high in SF. As a result, more people choose to live in SJ instead. The ordering matters because this is a one-way causality since SF dominant the economies. 
+
+## 11.4
+```{r forecast}
+# forecast one step ahead
+var_p<-predict(object=var_s, n.ahead=1)
+plot(var_p,xlim=c(150,160))
+
+# real data
+real_stepone<-rbind(train_gr,test_gr[1,])
+plot(real_stepone[,1],type='l',xlim=c(150,160),main="actual data of SF")
+plot(real_stepone[,2],type='l',xlim=c(150,160),main="actual data of SJ")
+
+# univariate model
+## linear+lag
+sf_m1<-dynlm(train_gr[,1]~Lag(train_gr[,1],1))
+summary(sf_m1) 
+sj_m1<-dynlm(train_gr[,2]~Lag(train_gr[,2],1))
+summary(sj_m1)
+# use linear + lag to forecast one step ahead
+sf_156<-sf_m1$coefficients[1]+sf_m1$coefficients[2]*train_gr[155,1]
+sj_156<-sj_m1$coefficients[1]+sj_m1$coefficients[2]*train_gr[155,2]
+print(sf_156)
+print(sj_156)
+## linear
+ts_x<-seq(1975, 2013,length=length(train_gr[,1]))
+m2<-lm(train_gr~ts_x)
+summary(m2)
+##  linear lag regression works better
+AIC(sf_m1,sj_m1)
+BIC(sf_m1,sj_m1)
+
+# unconditional predictability test
+# construct quadratic loss function
+l1_sf<-MSE(sf_m1$fitted.values,train_gr[,1])
+l1_sj<-MSE(sj_m1$fitted.values,train_gr[,2])
+
+lv_sf<-MSE(var_p$endog[,1],train_gr[,1])
+lv_sj<-MSE(var_p$endog[,2],train_gr[,2])
+
+diff_sf<-l1_sf - lv_sf
+diff_sj<-l1_sj - lv_sj
+
+## both diff_sf and diff_sj are positive, which means lag and linear regression is better than var prediction
+
+```
+###As the summary and AIC,BIC and the unconditional predictability test, we can see the linear regression with lag1 as regressor can provide a better approximation than prediction by var. 
+
+##11.5
+```{r 11.5}
+# predict multiple steps with var
+var_mp<-predict(object=var_s, n.ahead=21)
+plot(var_mp)  # forecast with 95% interval
+
+# predict multiple steps with linear regression with lag
+sf_pred<-vector(mode="numeric",length=0)
+sj_pred<-vector(mode="numeric",length=0)
+sf_pred[1]<-sf_156
+sj_pred[1]<-sj_156
+
+for (i in 2:21)
+{
+  sf_pred[i]<-sf_m1$coefficients[1]+sf_m1$coefficients[2]*sf_pred[i-1]
+  sj_pred[i]<-sj_m1$coefficients[1]+sj_m1$coefficients[2]*sj_pred[i-1]
+}
+
+
+sd_sf<-sd(sf_pred)
+sd_sj<-sd(sj_pred)
+
+p_x <- seq(156,176,by=1)
+
+full <- c(train_gr[,1],sf_pred[])
+full_sj <-c(train_gr[,2],sj_pred[])
+
+plot(full,type='l',main="SF Multistep Prediction of lag Linear regression")
+lines(x=p_x,y=sf_pred,col='blue')
+lines(x=p_x,y=sf_pred+1.96*sd_sf,col="red")
+lines(x=p_x,y=sf_pred-1.96*sd_sf,col="red")
+
+plot(full_sj,type='l',main="SF Multistep Prediction of lag Linear regression")
+lines(x=p_x,y=sj_pred,col='blue')
+lines(x=p_x,y=sj_pred+1.96*sd_sj,col="red")
+lines(x=p_x,y=sj_pred-1.96*sd_sj,col="red")
+
+## data from albany-Sche
+gras<-gr$...6 #growth rate
+gras_train<-gras[1:155] # train set
+gras_test<-gras[156:176] # test set
+
+print(gras)
+```
+### In the multistep prediction of Var, SF seems like a smooth horizontal line, while SJ has some fluctuations. In the multistep prediction of linear regression with lag, both SF and SJ are smooth and have a decreasing trend. 
+
+##11.6
+```{r 11.6}
+## I choose to compare AS and SF
+train_assf<-cbind(gras_train,train_gr[,1])
+colnames(train_assf)<-c("AS","SF")
+var_assf<-VAR(train_assf,p=2)
+AIC(var_assf)
+BIC(var_assf)
+summary(var_assf)
+# grangertest
+as<-train_assf[,1]
+sf<-train_assf[,2]
+
+grangertest(as~sf, order = 2)
+grangertest(sf~as, order = 2) 
+```
+### By attemping different values of p, I choose Var(2) which has the relatively smallest AIC,BIC. AS is only affected its own lag values, while SF is affected mostly by its own lag values, and slightly by AS's lag values. By taking Granger test, the growth in as has somehow affect the growth in sf.
+
+
+
+
+
+
+
+

@@ -1,0 +1,201 @@
+---
+title: "Econ144 hw1_Sijia"
+author: "Sijia Hua"
+date: "4/8/2019"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(gdata)
+library(moments)
+library("ggpubr")
+library(dynlm)
+library(tidyr)
+```
+
+## Econ 144 HW1
+
+### Chapter 2 #2
+```{r Chapter 2 #2}
+setwd("/Users/Renaissance/Desktop")
+hw11<-read.xls('econ144hw1data.xlsx',sheet = 1) #import data
+```
+
+```{r}
+# compute descriptive statistics 
+ hw11 %>% select(c(-1)) %>% summary()
+paste("The skewness of GRGDP is ", round(skewness(hw11$GRGDP),3),". Hence GRGDP is left-skewness.") 
+paste("The skewness of Return is ", round(skewness(hw11$RETURN),3),". Hence Return is left-skewness.") 
+paste("The kurtosis of GRGDP is ",round(kurtosis(hw11$GRGDP),3))
+paste("The kurtosis of Return is ",round(kurtosis(hw11$RETURN),3))
+paste("The Jarque-Bera Test of GRGDP is ")
+jarque.test(hw11$GRGDP)
+paste("The Jarque-Bera Test of Return is ")
+jarque.test(hw11$RETURN)
+
+
+hist(hw11$GRGDP,main="Histogram of GRGDP",xlab="GRGDP")
+hist(hw11$RETURN, main="Histogram of SP500 Quarterly Return",xlab="Return")
+
+```
+```{r boxplot in 2}
+boxplot(hw11$GRGDP,main="Box Plot of GRGDP",horizontal = TRUE)
+boxplot(hw11$RETURN,main="Box Plot of Return",horizontal = TRUE)
+
+```
+
+
+
+```{r correlation in #2}
+# ls <- lm(hw12$GRGDP~hw12$RETURN) #find linear regression between GDP and returns
+# summary(ls)
+paste("Correlation betwen this two variable is ",round(cor(hw11$RETURN,hw11$GRGDP,method="pearson"),3), ". This indicates that GRGDP has a low correlation with Return.")
+```
+
+### Chapter 2 #4
+```{r Chapter 2 #4}
+# still use hw11 data
+y=ts(hw11$GRGDP,start=1950.25, freq=1)
+x=ts(hw11$RETURN,start=1950.25, freq=1)
+
+# (a) 
+ma=lm(y~x)
+summary(ma)
+
+```
+
+
+\indent I choose the significant level = 0.05. As the p-value is 1.6e-05, much less than 0.05, we reject the null hypothesis that β = 0. Hence, there is a (significant) relationship between the variables in the linear regression model of the data set. In this case, stock market is a leading indicator.  
+
+
+```{r 2.4 model b}
+# (b) 
+mb=dynlm(y~L(x,1))
+summary(mb)    #r-square has improved 
+```
+
+\indent I choose the significant level = 0.05. As the p-value is 3.17e-11, much less than 0.05, we reject the null hypothesis that β = 0. Hence, there is a (significant) relationship between the variables in the linear regression model of the data set. In this case, stock market is a leading indicator. 
+
+### Chapter 2 #5
+```{r model c in #5}
+# (c) 
+mc=dynlm(y~L(x,1)+L(x,2)+L(x,3)+L(x,4))
+summary(mc)
+```
+
+\indent  In summary, The p value of L(x,1) is 1.95e-08, which is smaller than 0.05. We reject H0: \beta_1 =0. The stock market with 1-quarter leading is an indicator. The p value of L(x,2) is 0.0867, which is bigger than 0.05. We can not reject H0. There is no significant difference. Stock market's 2-quarter leading price may not be an indicator. The p value of L(x,3) and L(x,4) is 0.1366 and 0.2201 respectively, which are bigger than 0.05. We can not reject H0.There is no significant difference. <br>
+\indent P value of the F-statistic is 2.509e-11, which is smaller than 0.05.Hence, we can reject H0, the overall addition of the variables is significantly improving the model. 
+
+```{r test model d}
+md=dynlm(y~L(x,1)+L(x,2)+L(x,3)+L(x,4)+L(y,1))
+summary(md)
+```
+
+
+### Chapter 2 #7
+
+```{r}
+hw12<-read.xls('econ144hw1data.xlsx',sheet = 2) # read data
+
+# calculate growth rate
+grate_unem <- function(x)(x/lag(x)-1)*100
+hw12$growth_unem <-round(grate_unem(hw12$UNEM),3)
+grate_pov <- function(x)(x/lag(x)-1)*100
+hw12$growth_pov <- round(grate_pov(hw12$POV),3)
+
+# delete blank column
+hw12<-hw12%>% select(c(-4))
+
+# drop first row (NA)
+newhw12 <- hw12 %>% drop_na()
+```
+
+### descriptive statistics of two growth rates
+```{r}
+# descriptive statistic
+summary(hw12)
+paste("The skewness of growth rate of unemployed persons is ", round(skewness(newhw12$growth_unem),3),". Hence the growth rate of unemployed person is right-skewness.") 
+paste("The skewness of growth rate of number of people in poverty is ", round(skewness(newhw12$growth_pov),3),". Hence Return is right-skewness.") 
+paste("The kurtosis of growth rate of unemployed person is ",round(kurtosis(newhw12$growth_unem),3))
+paste("The kurtosis of growth rate of number of people in poverty is ",round(kurtosis(newhw12$growth_pov),3))
+paste("The Jarque-Bera Test of growth rate of unemployed person is ")
+jarque.test(newhw12$growth_unem)
+paste("The Jarque-Bera Test of growth rate of number of people is ")
+jarque.test(newhw12$growth_pov)
+
+```
+
+```{r histogram}
+hist(hw12$growth_unem,main="Histogram of growth rate of unemployed perons",xlab="Growth rate of unemployment")
+hist(hw12$growth_pov, main="Histogram of growth rate of number of people in poverty",xlab="Growth rate of people in poverty")
+```
+
+```{r boxplot}
+boxplot(hw12$growth_unem,main="Box Plot of growth rate of unemployment",horizontal = TRUE)
+boxplot(hw12$growth_pov,main="Box Plot of growth rate of poverty",horizontal = TRUE)
+```
+
+```{r correlation}
+plot(hw12$year,hw12$growth_unem,type="l",lwd = 1.5,xlab = "year",ylab="Growth rate")
+lines(hw12$year,hw12$growth_pov,type="l",lwd=1.5, col="blue")
+legend("topleft", legend = c("g.r.of unemployment", "g.r.of poverty"), col = c("black","blue"), pch = c(1,1), bty = "n", pt.cex = 1, cex = 1, text.col = "black", horiz = F)
+
+paste("Correlation betwen this two variable is ",round(cor(hw11$RETURN,hw11$GRGDP,method="pearson"),3), ". This indicates that GRGDP has a low correlation with Return.")
+
+```
+
+### Chapter 2 #8
+
+```{r}
+hw13<-read.xls('econ144hw1data.xlsx',sheet = 3) # read data
+y=ts(hw13$G_POV,start=1960, freq=1)
+x=ts(hw13$G_UNEM,start=1960, freq=1)
+
+```
+
+```{r model a}
+# (a) 
+modela=lm(y~x)
+summary(modela)
+```
+For model a, multiple R-squared is 0.5045, adjusted R-squared is 0.4944.
+
+```{r model b}
+# I choose model b,c,d in excercise #3
+
+# (b) 
+modelb=dynlm(y~L(x,1))
+summary(modelb)
+```
+\indent For model b, multiple R-squared is 0.1267, adjusted r-squared is 0.1086.
+```{r model c}
+# (c) 
+modelc=dynlm(y~L(x,1)+L(x,2)+L(x,3)+L(x,4))
+summary(modelc)
+```
+\indent For model c, multiple R-squared is 0.1596, adjusted R-squared is 0.07957.
+```{r model d}
+# (d) 
+modeld=dynlm(y~L(x,1)+L(x,2)+L(x,3)+L(x,4)+L(y,1))
+summary(modeld)
+```
+\indent For model d, multiple R-squared is 0.3694, adjusted R-squared is 0.2925. 
+
+\indent <br> By comparing adjusted R-squared, I prefer model a. <br>
+\indent Compare AIC and BIC:
+
+```{r AIC,BIC}
+AIC(modela,modelb,modelc,modeld)
+BIC(modela,modelb,modelc,modeld)
+
+```
+
+
+\indent If I select model with respect to lowest AIC/BIC, I will prefer model a. 
+
+
+
+

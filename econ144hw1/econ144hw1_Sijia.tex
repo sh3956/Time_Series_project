@@ -1,0 +1,848 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Econ144 hw1\_Sijia},
+            pdfauthor={Sijia Hua},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Econ144 hw1\_Sijia}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Sijia Hua}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{4/8/2019}
+
+
+\begin{document}
+\maketitle
+
+\subsection{Econ 144 HW1}\label{econ-144-hw1}
+
+\subsubsection{Chapter 2 \#2}\label{chapter-2-2}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{setwd}\NormalTok{(}\StringTok{"/Users/Renaissance/Desktop"}\NormalTok{)}
+\NormalTok{hw11<-}\KeywordTok{read.xls}\NormalTok{(}\StringTok{'econ144hw1data.xlsx'}\NormalTok{,}\DataTypeTok{sheet =} \DecValTok{1}\NormalTok{) }\CommentTok{#import data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# compute descriptive statistics }
+\NormalTok{ hw11 }\OperatorTok{%>%}\StringTok{ }\KeywordTok{select}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\OperatorTok{-}\DecValTok{1}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{summary}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      GRGDP             RETURN       
+##  Min.   :-2.7075   Min.   :-26.937  
+##  1st Qu.: 0.3273   1st Qu.: -0.915  
+##  Median : 0.7679   Median :  2.023  
+##  Mean   : 0.7958   Mean   :  1.962  
+##  3rd Qu.: 1.3107   3rd Qu.:  5.753  
+##  Max.   : 3.9343   Max.   : 20.117
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{paste}\NormalTok{(}\StringTok{"The skewness of GRGDP is "}\NormalTok{, }\KeywordTok{round}\NormalTok{(}\KeywordTok{skewness}\NormalTok{(hw11}\OperatorTok{$}\NormalTok{GRGDP),}\DecValTok{3}\NormalTok{),}\StringTok{". Hence GRGDP is left-skewness."}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "The skewness of GRGDP is  -0.189 . Hence GRGDP is left-skewness."
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{paste}\NormalTok{(}\StringTok{"The skewness of Return is "}\NormalTok{, }\KeywordTok{round}\NormalTok{(}\KeywordTok{skewness}\NormalTok{(hw11}\OperatorTok{$}\NormalTok{RETURN),}\DecValTok{3}\NormalTok{),}\StringTok{". Hence Return is left-skewness."}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "The skewness of Return is  -0.684 . Hence Return is left-skewness."
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{paste}\NormalTok{(}\StringTok{"The kurtosis of GRGDP is "}\NormalTok{,}\KeywordTok{round}\NormalTok{(}\KeywordTok{kurtosis}\NormalTok{(hw11}\OperatorTok{$}\NormalTok{GRGDP),}\DecValTok{3}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "The kurtosis of GRGDP is  4.418"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{paste}\NormalTok{(}\StringTok{"The kurtosis of Return is "}\NormalTok{,}\KeywordTok{round}\NormalTok{(}\KeywordTok{kurtosis}\NormalTok{(hw11}\OperatorTok{$}\NormalTok{RETURN),}\DecValTok{3}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "The kurtosis of Return is  5.271"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{paste}\NormalTok{(}\StringTok{"The Jarque-Bera Test of GRGDP is "}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "The Jarque-Bera Test of GRGDP is "
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{jarque.test}\NormalTok{(hw11}\OperatorTok{$}\NormalTok{GRGDP)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Jarque-Bera Normality Test
+## 
+## data:  hw11$GRGDP
+## JB = 22.265, p-value = 1.463e-05
+## alternative hypothesis: greater
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{paste}\NormalTok{(}\StringTok{"The Jarque-Bera Test of Return is "}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "The Jarque-Bera Test of Return is "
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{jarque.test}\NormalTok{(hw11}\OperatorTok{$}\NormalTok{RETURN)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Jarque-Bera Normality Test
+## 
+## data:  hw11$RETURN
+## JB = 72.627, p-value = 2.22e-16
+## alternative hypothesis: greater
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(hw11}\OperatorTok{$}\NormalTok{GRGDP,}\DataTypeTok{main=}\StringTok{"Histogram of GRGDP"}\NormalTok{,}\DataTypeTok{xlab=}\StringTok{"GRGDP"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{econ144hw1_Sijia_files/figure-latex/unnamed-chunk-1-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(hw11}\OperatorTok{$}\NormalTok{RETURN, }\DataTypeTok{main=}\StringTok{"Histogram of SP500 Quarterly Return"}\NormalTok{,}\DataTypeTok{xlab=}\StringTok{"Return"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{econ144hw1_Sijia_files/figure-latex/unnamed-chunk-1-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{boxplot}\NormalTok{(hw11}\OperatorTok{$}\NormalTok{GRGDP,}\DataTypeTok{main=}\StringTok{"Box Plot of GRGDP"}\NormalTok{,}\DataTypeTok{horizontal =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{econ144hw1_Sijia_files/figure-latex/boxplot in 2-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{boxplot}\NormalTok{(hw11}\OperatorTok{$}\NormalTok{RETURN,}\DataTypeTok{main=}\StringTok{"Box Plot of Return"}\NormalTok{,}\DataTypeTok{horizontal =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{econ144hw1_Sijia_files/figure-latex/boxplot in 2-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# ls <- lm(hw12$GRGDP~hw12$RETURN) #find linear regression between GDP and returns}
+\CommentTok{# summary(ls)}
+\KeywordTok{paste}\NormalTok{(}\StringTok{"Correlation betwen this two variable is "}\NormalTok{,}\KeywordTok{round}\NormalTok{(}\KeywordTok{cor}\NormalTok{(hw11}\OperatorTok{$}\NormalTok{RETURN,hw11}\OperatorTok{$}\NormalTok{GRGDP,}\DataTypeTok{method=}\StringTok{"pearson"}\NormalTok{),}\DecValTok{3}\NormalTok{), }\StringTok{". This indicates that GRGDP has a low correlation with Return."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Correlation betwen this two variable is  0.27 . This indicates that GRGDP has a low correlation with Return."
+\end{verbatim}
+
+\subsubsection{Chapter 2 \#4}\label{chapter-2-4}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# still use hw11 data}
+\NormalTok{y=}\KeywordTok{ts}\NormalTok{(hw11}\OperatorTok{$}\NormalTok{GRGDP,}\DataTypeTok{start=}\FloatTok{1950.25}\NormalTok{, }\DataTypeTok{freq=}\DecValTok{1}\NormalTok{)}
+\NormalTok{x=}\KeywordTok{ts}\NormalTok{(hw11}\OperatorTok{$}\NormalTok{RETURN,}\DataTypeTok{start=}\FloatTok{1950.25}\NormalTok{, }\DataTypeTok{freq=}\DecValTok{1}\NormalTok{)}
+
+\CommentTok{# (a) }
+\NormalTok{ma=}\KeywordTok{lm}\NormalTok{(y}\OperatorTok{~}\NormalTok{x)}
+\KeywordTok{summary}\NormalTok{(ma)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = y ~ x)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.5068 -0.5271 -0.0500  0.5344  3.2189 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 0.710672   0.062819  11.313  < 2e-16 ***
+## x           0.043388   0.009856   4.402  1.6e-05 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.9412 on 246 degrees of freedom
+## Multiple R-squared:  0.07303,    Adjusted R-squared:  0.06926 
+## F-statistic: 19.38 on 1 and 246 DF,  p-value: 1.597e-05
+\end{verbatim}
+
+\indent I choose the significant level = 0.05. As the p-value is
+1.6e-05, much less than 0.05, we reject the null hypothesis that β = 0.
+Hence, there is a (significant) relationship between the variables in
+the linear regression model of the data set. In this case, stock market
+is a leading indicator.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# (b) }
+\NormalTok{mb=}\KeywordTok{dynlm}\NormalTok{(y}\OperatorTok{~}\KeywordTok{L}\NormalTok{(x,}\DecValTok{1}\NormalTok{))}
+\KeywordTok{summary}\NormalTok{(mb)    }\CommentTok{#r-square has improved }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Time series regression with "ts" data:
+## Start = 1951, End = 2197
+## 
+## Call:
+## dynlm(formula = y ~ L(x, 1))
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.0231 -0.5339 -0.0346  0.4720  3.5844 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 0.661818   0.059134  11.192  < 2e-16 ***
+## L(x, 1)     0.064728   0.009305   6.956 3.17e-11 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.8855 on 245 degrees of freedom
+## Multiple R-squared:  0.1649, Adjusted R-squared:  0.1615 
+## F-statistic: 48.39 on 1 and 245 DF,  p-value: 3.169e-11
+\end{verbatim}
+
+\indent I choose the significant level = 0.05. As the p-value is
+3.17e-11, much less than 0.05, we reject the null hypothesis that β = 0.
+Hence, there is a (significant) relationship between the variables in
+the linear regression model of the data set. In this case, stock market
+is a leading indicator.
+
+\subsubsection{Chapter 2 \#5}\label{chapter-2-5}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# (c) }
+\NormalTok{mc=}\KeywordTok{dynlm}\NormalTok{(y}\OperatorTok{~}\KeywordTok{L}\NormalTok{(x,}\DecValTok{1}\NormalTok{)}\OperatorTok{+}\KeywordTok{L}\NormalTok{(x,}\DecValTok{2}\NormalTok{)}\OperatorTok{+}\KeywordTok{L}\NormalTok{(x,}\DecValTok{3}\NormalTok{)}\OperatorTok{+}\KeywordTok{L}\NormalTok{(x,}\DecValTok{4}\NormalTok{))}
+\KeywordTok{summary}\NormalTok{(mc)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Time series regression with "ts" data:
+## Start = 1954, End = 2197
+## 
+## Call:
+## dynlm(formula = y ~ L(x, 1) + L(x, 2) + L(x, 3) + L(x, 4))
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.9786 -0.5113  0.0068  0.4842  3.7592 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 0.571948   0.061504   9.299  < 2e-16 ***
+## L(x, 1)     0.056594   0.009735   5.814 1.95e-08 ***
+## L(x, 2)     0.018011   0.010471   1.720   0.0867 .  
+## L(x, 3)     0.015672   0.010493   1.494   0.1366    
+## L(x, 4)     0.011948   0.009719   1.229   0.2201    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.8526 on 239 degrees of freedom
+## Multiple R-squared:  0.2066, Adjusted R-squared:  0.1933 
+## F-statistic: 15.56 on 4 and 239 DF,  p-value: 2.509e-11
+\end{verbatim}
+
+\indent  In summary, The p value of L(x,1) is 1.95e-08, which is smaller
+than 0.05. We reject H0: \beta\_1 =0. The stock market with 1-quarter
+leading is an indicator. The p value of L(x,2) is 0.0867, which is
+bigger than 0.05. We can not reject H0. There is no significant
+difference. Stock market's 2-quarter leading price may not be an
+indicator. The p value of L(x,3) and L(x,4) is 0.1366 and 0.2201
+respectively, which are bigger than 0.05. We can not reject H0.There is
+no significant difference. \indent P value of the F-statistic is
+2.509e-11, which is smaller than 0.05.Hence, we can reject H0, the
+overall addition of the variables is significantly improving the model.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{md=}\KeywordTok{dynlm}\NormalTok{(y}\OperatorTok{~}\KeywordTok{L}\NormalTok{(x,}\DecValTok{1}\NormalTok{)}\OperatorTok{+}\KeywordTok{L}\NormalTok{(x,}\DecValTok{2}\NormalTok{)}\OperatorTok{+}\KeywordTok{L}\NormalTok{(x,}\DecValTok{3}\NormalTok{)}\OperatorTok{+}\KeywordTok{L}\NormalTok{(x,}\DecValTok{4}\NormalTok{)}\OperatorTok{+}\KeywordTok{L}\NormalTok{(y,}\DecValTok{1}\NormalTok{))}
+\KeywordTok{summary}\NormalTok{(md)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Time series regression with "ts" data:
+## Start = 1954, End = 2197
+## 
+## Call:
+## dynlm(formula = y ~ L(x, 1) + L(x, 2) + L(x, 3) + L(x, 4) + L(y, 
+##     1))
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.8733 -0.4469 -0.0007  0.5037  3.7168 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 0.444490   0.069652   6.382 9.07e-10 ***
+## L(x, 1)     0.050535   0.009646   5.239 3.56e-07 ***
+## L(x, 2)     0.007459   0.010629   0.702 0.483503    
+## L(x, 3)     0.011149   0.010316   1.081 0.280918    
+## L(x, 4)     0.007133   0.009577   0.745 0.457103    
+## L(y, 1)     0.230396   0.063898   3.606 0.000379 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.832 on 238 degrees of freedom
+## Multiple R-squared:  0.2477, Adjusted R-squared:  0.2319 
+## F-statistic: 15.67 on 5 and 238 DF,  p-value: 2.483e-13
+\end{verbatim}
+
+\subsubsection{Chapter 2 \#7}\label{chapter-2-7}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{hw12<-}\KeywordTok{read.xls}\NormalTok{(}\StringTok{'econ144hw1data.xlsx'}\NormalTok{,}\DataTypeTok{sheet =} \DecValTok{2}\NormalTok{) }\CommentTok{# read data}
+
+\CommentTok{# calculate growth rate}
+\NormalTok{grate_unem <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x)(x}\OperatorTok{/}\KeywordTok{lag}\NormalTok{(x)}\OperatorTok{-}\DecValTok{1}\NormalTok{)}\OperatorTok{*}\DecValTok{100}
+\NormalTok{hw12}\OperatorTok{$}\NormalTok{growth_unem <-}\KeywordTok{round}\NormalTok{(}\KeywordTok{grate_unem}\NormalTok{(hw12}\OperatorTok{$}\NormalTok{UNEM),}\DecValTok{3}\NormalTok{)}
+\NormalTok{grate_pov <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x)(x}\OperatorTok{/}\KeywordTok{lag}\NormalTok{(x)}\OperatorTok{-}\DecValTok{1}\NormalTok{)}\OperatorTok{*}\DecValTok{100}
+\NormalTok{hw12}\OperatorTok{$}\NormalTok{growth_pov <-}\StringTok{ }\KeywordTok{round}\NormalTok{(}\KeywordTok{grate_pov}\NormalTok{(hw12}\OperatorTok{$}\NormalTok{POV),}\DecValTok{3}\NormalTok{)}
+
+\CommentTok{# delete blank column}
+\NormalTok{hw12<-hw12}\OperatorTok{%>%}\StringTok{ }\KeywordTok{select}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\OperatorTok{-}\DecValTok{4}\NormalTok{))}
+
+\CommentTok{# drop first row (NA)}
+\NormalTok{newhw12 <-}\StringTok{ }\NormalTok{hw12 }\OperatorTok{%>%}\StringTok{ }\KeywordTok{drop_na}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{descriptive statistics of two growth
+rates}\label{descriptive-statistics-of-two-growth-rates}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# descriptive statistic}
+\KeywordTok{summary}\NormalTok{(hw12)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       year           POV             UNEM        growth_unem     
+##  Min.   :1959   Min.   :22973   Min.   : 2797   Min.   :-20.245  
+##  1st Qu.:1972   1st Qu.:28325   1st Qu.: 4834   1st Qu.: -7.125  
+##  Median :1984   Median :33642   Median : 6979   Median : -2.376  
+##  Mean   :1984   Mean   :32982   Mean   : 6795   Mean   :  4.004  
+##  3rd Qu.:1997   3rd Qu.:36634   3rd Qu.: 8253   3rd Qu.:  9.735  
+##  Max.   :2010   Max.   :46180   Max.   :14815   Max.   : 59.770  
+##                                                 NA's   :1        
+##    growth_pov      
+##  Min.   :-14.0880  
+##  1st Qu.: -3.0790  
+##  Median : -0.5600  
+##  Mean   :  0.4489  
+##  3rd Qu.:  4.6265  
+##  Max.   : 12.2740  
+##  NA's   :1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{paste}\NormalTok{(}\StringTok{"The skewness of growth rate of unemployed persons is "}\NormalTok{, }\KeywordTok{round}\NormalTok{(}\KeywordTok{skewness}\NormalTok{(newhw12}\OperatorTok{$}\NormalTok{growth_unem),}\DecValTok{3}\NormalTok{),}\StringTok{". Hence the growth rate of unemployed person is right-skewness."}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "The skewness of growth rate of unemployed persons is  1.425 . Hence the growth rate of unemployed person is right-skewness."
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{paste}\NormalTok{(}\StringTok{"The skewness of growth rate of number of people in poverty is "}\NormalTok{, }\KeywordTok{round}\NormalTok{(}\KeywordTok{skewness}\NormalTok{(newhw12}\OperatorTok{$}\NormalTok{growth_pov),}\DecValTok{3}\NormalTok{),}\StringTok{". Hence Return is right-skewness."}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "The skewness of growth rate of number of people in poverty is  0.027 . Hence Return is right-skewness."
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{paste}\NormalTok{(}\StringTok{"The kurtosis of growth rate of unemployed person is "}\NormalTok{,}\KeywordTok{round}\NormalTok{(}\KeywordTok{kurtosis}\NormalTok{(newhw12}\OperatorTok{$}\NormalTok{growth_unem),}\DecValTok{3}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "The kurtosis of growth rate of unemployed person is  4.74"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{paste}\NormalTok{(}\StringTok{"The kurtosis of growth rate of number of people in poverty is "}\NormalTok{,}\KeywordTok{round}\NormalTok{(}\KeywordTok{kurtosis}\NormalTok{(newhw12}\OperatorTok{$}\NormalTok{growth_pov),}\DecValTok{3}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "The kurtosis of growth rate of number of people in poverty is  2.885"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{paste}\NormalTok{(}\StringTok{"The Jarque-Bera Test of growth rate of unemployed person is "}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "The Jarque-Bera Test of growth rate of unemployed person is "
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{jarque.test}\NormalTok{(newhw12}\OperatorTok{$}\NormalTok{growth_unem)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Jarque-Bera Normality Test
+## 
+## data:  newhw12$growth_unem
+## JB = 23.703, p-value = 7.127e-06
+## alternative hypothesis: greater
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{paste}\NormalTok{(}\StringTok{"The Jarque-Bera Test of growth rate of number of people is "}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "The Jarque-Bera Test of growth rate of number of people is "
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{jarque.test}\NormalTok{(newhw12}\OperatorTok{$}\NormalTok{growth_pov)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Jarque-Bera Normality Test
+## 
+## data:  newhw12$growth_pov
+## JB = 0.034273, p-value = 0.983
+## alternative hypothesis: greater
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(hw12}\OperatorTok{$}\NormalTok{growth_unem,}\DataTypeTok{main=}\StringTok{"Histogram of growth rate of unemployed perons"}\NormalTok{,}\DataTypeTok{xlab=}\StringTok{"Growth rate of unemployment"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{econ144hw1_Sijia_files/figure-latex/histogram-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(hw12}\OperatorTok{$}\NormalTok{growth_pov, }\DataTypeTok{main=}\StringTok{"Histogram of growth rate of number of people in poverty"}\NormalTok{,}\DataTypeTok{xlab=}\StringTok{"Growth rate of people in poverty"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{econ144hw1_Sijia_files/figure-latex/histogram-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{boxplot}\NormalTok{(hw12}\OperatorTok{$}\NormalTok{growth_unem,}\DataTypeTok{main=}\StringTok{"Box Plot of growth rate of unemployment"}\NormalTok{,}\DataTypeTok{horizontal =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{econ144hw1_Sijia_files/figure-latex/boxplot-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{boxplot}\NormalTok{(hw12}\OperatorTok{$}\NormalTok{growth_pov,}\DataTypeTok{main=}\StringTok{"Box Plot of growth rate of poverty"}\NormalTok{,}\DataTypeTok{horizontal =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{econ144hw1_Sijia_files/figure-latex/boxplot-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(hw12}\OperatorTok{$}\NormalTok{year,hw12}\OperatorTok{$}\NormalTok{growth_unem,}\DataTypeTok{type=}\StringTok{"l"}\NormalTok{,}\DataTypeTok{lwd =} \FloatTok{1.5}\NormalTok{,}\DataTypeTok{xlab =} \StringTok{"year"}\NormalTok{,}\DataTypeTok{ylab=}\StringTok{"Growth rate"}\NormalTok{)}
+\KeywordTok{lines}\NormalTok{(hw12}\OperatorTok{$}\NormalTok{year,hw12}\OperatorTok{$}\NormalTok{growth_pov,}\DataTypeTok{type=}\StringTok{"l"}\NormalTok{,}\DataTypeTok{lwd=}\FloatTok{1.5}\NormalTok{, }\DataTypeTok{col=}\StringTok{"blue"}\NormalTok{)}
+\KeywordTok{legend}\NormalTok{(}\StringTok{"topleft"}\NormalTok{, }\DataTypeTok{legend =} \KeywordTok{c}\NormalTok{(}\StringTok{"g.r.of unemployment"}\NormalTok{, }\StringTok{"g.r.of poverty"}\NormalTok{), }\DataTypeTok{col =} \KeywordTok{c}\NormalTok{(}\StringTok{"black"}\NormalTok{,}\StringTok{"blue"}\NormalTok{), }\DataTypeTok{pch =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{), }\DataTypeTok{bty =} \StringTok{"n"}\NormalTok{, }\DataTypeTok{pt.cex =} \DecValTok{1}\NormalTok{, }\DataTypeTok{cex =} \DecValTok{1}\NormalTok{, }\DataTypeTok{text.col =} \StringTok{"black"}\NormalTok{, }\DataTypeTok{horiz =}\NormalTok{ F)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{econ144hw1_Sijia_files/figure-latex/correlation-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{paste}\NormalTok{(}\StringTok{"Correlation betwen this two variable is "}\NormalTok{,}\KeywordTok{round}\NormalTok{(}\KeywordTok{cor}\NormalTok{(hw11}\OperatorTok{$}\NormalTok{RETURN,hw11}\OperatorTok{$}\NormalTok{GRGDP,}\DataTypeTok{method=}\StringTok{"pearson"}\NormalTok{),}\DecValTok{3}\NormalTok{), }\StringTok{". This indicates that GRGDP has a low correlation with Return."}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Correlation betwen this two variable is  0.27 . This indicates that GRGDP has a low correlation with Return."
+\end{verbatim}
+
+\subsubsection{Chapter 2 \#8}\label{chapter-2-8}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{hw13<-}\KeywordTok{read.xls}\NormalTok{(}\StringTok{'econ144hw1data.xlsx'}\NormalTok{,}\DataTypeTok{sheet =} \DecValTok{3}\NormalTok{) }\CommentTok{# read data}
+\NormalTok{y=}\KeywordTok{ts}\NormalTok{(hw13}\OperatorTok{$}\NormalTok{G_POV,}\DataTypeTok{start=}\DecValTok{1960}\NormalTok{, }\DataTypeTok{freq=}\DecValTok{1}\NormalTok{)}
+\NormalTok{x=}\KeywordTok{ts}\NormalTok{(hw13}\OperatorTok{$}\NormalTok{G_UNEM,}\DataTypeTok{start=}\DecValTok{1960}\NormalTok{, }\DataTypeTok{freq=}\DecValTok{1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# (a) }
+\NormalTok{modela=}\KeywordTok{lm}\NormalTok{(y}\OperatorTok{~}\NormalTok{x)}
+\KeywordTok{summary}\NormalTok{(modela)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = y ~ x)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -10.4671  -2.7537   0.3376   2.0197   7.4094 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  -0.4307     0.5498  -0.783    0.437    
+## x             0.2197     0.0311   7.063  5.3e-09 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 3.825 on 49 degrees of freedom
+## Multiple R-squared:  0.5045, Adjusted R-squared:  0.4944 
+## F-statistic: 49.89 on 1 and 49 DF,  p-value: 5.296e-09
+\end{verbatim}
+
+For model a, multiple R-squared is 0.5045, adjusted R-squared is 0.4944.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# I choose model b,c,d in excercise #3}
+
+\CommentTok{# (b) }
+\NormalTok{modelb=}\KeywordTok{dynlm}\NormalTok{(y}\OperatorTok{~}\KeywordTok{L}\NormalTok{(x,}\DecValTok{1}\NormalTok{))}
+\KeywordTok{summary}\NormalTok{(modelb)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Time series regression with "ts" data:
+## Start = 1961, End = 2010
+## 
+## Call:
+## dynlm(formula = y ~ L(x, 1))
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -12.8549  -3.1164  -0.3667   3.0453  12.3684 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(>|t|)  
+## (Intercept) -0.002186   0.744465  -0.003   0.9977  
+## L(x, 1)      0.110109   0.041716   2.640   0.0112 *
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 5.129 on 48 degrees of freedom
+## Multiple R-squared:  0.1267, Adjusted R-squared:  0.1086 
+## F-statistic: 6.967 on 1 and 48 DF,  p-value: 0.01116
+\end{verbatim}
+
+\indent For model b, multiple R-squared is 0.1267, adjusted r-squared is
+0.1086.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# (c) }
+\NormalTok{modelc=}\KeywordTok{dynlm}\NormalTok{(y}\OperatorTok{~}\KeywordTok{L}\NormalTok{(x,}\DecValTok{1}\NormalTok{)}\OperatorTok{+}\KeywordTok{L}\NormalTok{(x,}\DecValTok{2}\NormalTok{)}\OperatorTok{+}\KeywordTok{L}\NormalTok{(x,}\DecValTok{3}\NormalTok{)}\OperatorTok{+}\KeywordTok{L}\NormalTok{(x,}\DecValTok{4}\NormalTok{))}
+\KeywordTok{summary}\NormalTok{(modelc)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Time series regression with "ts" data:
+## Start = 1964, End = 2010
+## 
+## Call:
+## dynlm(formula = y ~ L(x, 1) + L(x, 2) + L(x, 3) + L(x, 4))
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -12.8470  -3.6448  -0.1239   3.9760  11.5391 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)  
+## (Intercept)  0.26221    0.81984   0.320   0.7507  
+## L(x, 1)      0.12840    0.04971   2.583   0.0134 *
+## L(x, 2)     -0.05268    0.05695  -0.925   0.3602  
+## L(x, 3)     -0.02281    0.05563  -0.410   0.6838  
+## L(x, 4)      0.02086    0.05375   0.388   0.6998  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 5.287 on 42 degrees of freedom
+## Multiple R-squared:  0.1596, Adjusted R-squared:  0.07957 
+## F-statistic: 1.994 on 4 and 42 DF,  p-value: 0.1129
+\end{verbatim}
+
+\indent For model c, multiple R-squared is 0.1596, adjusted R-squared is
+0.07957.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# (d) }
+\NormalTok{modeld=}\KeywordTok{dynlm}\NormalTok{(y}\OperatorTok{~}\KeywordTok{L}\NormalTok{(x,}\DecValTok{1}\NormalTok{)}\OperatorTok{+}\KeywordTok{L}\NormalTok{(x,}\DecValTok{2}\NormalTok{)}\OperatorTok{+}\KeywordTok{L}\NormalTok{(x,}\DecValTok{3}\NormalTok{)}\OperatorTok{+}\KeywordTok{L}\NormalTok{(x,}\DecValTok{4}\NormalTok{)}\OperatorTok{+}\KeywordTok{L}\NormalTok{(y,}\DecValTok{1}\NormalTok{))}
+\KeywordTok{summary}\NormalTok{(modeld)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Time series regression with "ts" data:
+## Start = 1964, End = 2010
+## 
+## Call:
+## dynlm(formula = y ~ L(x, 1) + L(x, 2) + L(x, 3) + L(x, 4) + L(y, 
+##     1))
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -9.9066 -2.6588  0.2105  3.1978  8.1328 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  0.67751    0.72750   0.931 0.357157    
+## L(x, 1)     -0.01948    0.05918  -0.329 0.743647    
+## L(x, 2)     -0.07897    0.05043  -1.566 0.125031    
+## L(x, 3)     -0.02047    0.04877  -0.420 0.676876    
+## L(x, 4)      0.00998    0.04722   0.211 0.833648    
+## L(y, 1)      0.67568    0.18293   3.694 0.000646 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 4.635 on 41 degrees of freedom
+## Multiple R-squared:  0.3694, Adjusted R-squared:  0.2925 
+## F-statistic: 4.804 on 5 and 41 DF,  p-value: 0.001509
+\end{verbatim}
+
+\indent For model d, multiple R-squared is 0.3694, adjusted R-squared is
+0.2925.
+
+\indent <br> By comparing adjusted R-squared, I prefer model a.
+\indent Compare AIC and BIC:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{AIC}\NormalTok{(modela,modelb,modelc,modeld)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in AIC.default(modela, modelb, modelc, modeld): models are not all
+## fitted to the same number of observations
+\end{verbatim}
+
+\begin{verbatim}
+##        df      AIC
+## modela  3 285.5185
+## modelb  3 309.3521
+## modelc  6 296.6272
+## modeld  7 285.1260
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{BIC}\NormalTok{(modela,modelb,modelc,modeld)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in BIC.default(modela, modelb, modelc, modeld): models are not all
+## fitted to the same number of observations
+\end{verbatim}
+
+\begin{verbatim}
+##        df      BIC
+## modela  3 291.3139
+## modelb  3 315.0881
+## modelc  6 307.7281
+## modeld  7 298.0771
+\end{verbatim}
+
+\indent If I select model with respect to lowest AIC/BIC, I will prefer
+model a.
+
+
+\end{document}

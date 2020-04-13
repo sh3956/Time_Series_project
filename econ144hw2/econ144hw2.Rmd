@@ -1,0 +1,471 @@
+---
+title: "econ144hw2"
+author: "Sijia Hua"
+date: "4/17/2019"
+output: pdf_document
+---
+
+```{r setup,}
+library(seasonal)
+library(dynlm)
+library(gdata)
+require(graphics)
+library("readxl")
+library('xts')
+library('forecast');
+library('fma')
+library('expsmooth')
+library('lmtest')
+library('tseries')
+library('Quandl')
+library('fpp');
+library('urca')
+library(Hmisc)
+setwd("/Users/Renaissance/Desktop/econ144/econ144hw2")
+```
+
+### A.Chapter3.3
+#### (a)
+##### Exact Definition: Real Gross Domestic Product, 1 Decimal
+##### Periodicity: Quarterly
+##### Unites: Billions of Chained 2005 Dollars
+```{r a3.3a}
+hw21<-read.xls('hw2adata.xlsx',sheet = 3) #import data
+gdpts<-ts(hw21$rgdp,start=1947,end=2012,frequency  = 3)
+
+fita=tslm(gdpts ~ trend)
+plot(gdpts)
+lines(fita$fitted.values,col="red")
+
+# check acf and pacf
+Acf(hw21$rgdp)
+Pacf(hw21$rgdp)
+
+# check ADF
+aatest <- adf.test(hw21$rgdp,alternative = 'stationary')
+print(aatest)
+
+# check KPSS
+aktest <- kpss.test(hw21$rgdp)
+aktest
+```
+<br> From the plot graph of this data set, since its trend is not constant, this time series is probably not a stationary set.
+<br> From the graph of Acf, this time series is non-stationary. 
+<br> From the test of ADF, H0 that this series is non-stationary can not be reject. 
+<br> From the test of KPSS,  pvalue is less than 0.01,this time series is non-stationary. 
+
+#### (b)
+##### Exact Definition: Japan / U.S. Foreign Exchange Rate
+##### Periodicity: Daily
+##### Unites: Japanese Yen to One U.S. Dollar
+
+```{r a3.3b}
+
+hw22<-read.xls('hw2adata.xlsx',sheet = 4) #import data
+usdts <- ts(hw22$jpy_usd,start=1971,end=2012,freq=365)
+
+fitb=tslm(usdts ~ trend)
+plot(usdts)
+lines(fitb$fitted.values,col="red")
+
+# check acf and pacf
+acf(hw22$jpy_usd)
+pacf(hw22$jpy_usd)
+
+# check ADF
+batest <- adf.test(hw22$jpy_usd,alternative = 'stationary')
+print(batest)
+
+# check KPSS
+bktest <- kpss.test(hw22$jpy_usd)
+bktest
+
+```
+<br> From the plot graph of this data set, since its trend is not constant, this time series is probably not a stationary set.
+<br> By observing ACF graph, this time series probably is not stationary.
+<br> From the test of ADF, H0 that this series is non-stationary can not be reject. 
+<br> By taking the test of KPSS, pvalue is less than 0.01,this time series is non-stationary. 
+
+#### (c)
+##### Exact Definition: 10-Year Treasury Constant Maturity Rate
+##### Periodicity: Daily
+##### Unites: Percent
+
+```{r a3.3c}
+
+hw23<-read.xls('hw2adata.xlsx',sheet = 5) #import data
+cmratets <- ts(hw23$CMRate10Yr,start=1962,end=2012,freq=365)
+
+fitc=tslm(cmratets ~ trend)
+plot(cmratets)
+lines(fitc$fitted.values,col="red")
+
+# check acf and pacf
+acf(hw23$CMRate10Yr)
+pacf(hw23$CMRate10Yr)
+
+# check ADF
+catest <- adf.test(hw23$CMRate10Yr,alternative = 'stationary')
+print(catest)
+
+# check KPSS
+cktest <- kpss.test(hw23$CMRate10Yr)
+cktest
+
+
+```
+<br> From the plot graph of this data set, since its trend is nearly constant, this time series is probably a stationary set.
+<br> From the graph of Acf, this time series is non-stationary. 
+<br> From the test of ADF, H0 that this series is non-stationary can not be reject. 
+<br> From the test of KPSS,  pvalue is less than 0.01,this time series is non-stationary. 
+
+#### (d)
+##### Exact Definition: Civilian Unemployment Rate
+##### Periodicity: Monthly
+##### Unites: Percent
+
+```{r a3.3d}
+
+hw24<-read.xls('hw2adata.xlsx',sheet = 6) #import data
+unemts <- ts(hw24$unemrate,start=1948,end=2012,freq=12)
+
+fitd=tslm(unemts ~ trend)
+plot(unemts)
+lines(fitd$fitted.values,col="red")
+
+# check acf and pacf
+acf(hw24$unemrate)
+pacf(hw24$unemrate)
+
+# check ADF
+datest <- adf.test(hw24$unemrate,alternative = 'stationary')
+print(datest)
+
+# check KPSS
+dktest <- kpss.test(hw24$unemrate)
+dktest
+
+
+```
+<br> From the plot graph of this data set, since its trend is not constant, this time series is probably not a stationary set.
+<br> By observing ACF graph, this time series probably is not stationary.
+<br> From the test of ADF, pvalue is less than 0.05, so H0 that this series is non-stationary can be reject. 
+<br> By taking the test of KPSS, pvalue is less than 0.01,this time series is non-stationary. 
+
+
+### A.Chapter3.5
+
+```{r a3.5a}
+hw25<-read.xls('hw2adata.xlsx',sheet = 7) #import data
+gts <- ts(hw25$GDP,start=2001,end=2004,freq=4)
+
+fitg=tslm(gts ~ trend)
+plot(gts)
+lines(fitg$fitted.values,col="red")
+
+```
+<br> This can not be first order or second order weakly stationary, since it does not have a constant trend that indicates mean reversion. Since all orders of weakly stationary require each variable has identical mean, this time series does not have any order of weakly stationary.
+
+```{r a3.5b}
+glt <- vector(mode="numeric",length=0)
+glt <- (hw25$GDP/Lag(hw25$GDP,1)-1)*100
+glt
+```
+
+```{r a3.5c}
+logg<-log(glt)
+
+lgts <- ts(logg,start=2001,end=2004,freq=4)
+
+fitllg=tslm(lgts ~ trend)
+plot(lgts)
+lines(fitllg$fitted.values,col="red")
+
+```
+<br> This can not be first order or second order weakly stationary, since it does not have a constant trend that indicates mean reversion. Since all orders of weakly stationary require each variable has identical mean, this time series does not have any order of weakly stationary. 
+
+
+```{r a3.5d}
+
+g2t<-round(diff(logg)*100,5)
+g2t
+plot(g2t,type="l")
+
+```
+
+```{r a3.5e}
+
+# The results of g1t and g2t are quite similar, they all indicate return of GDP. They have siginificant difference from 8th to 11th period. 
+
+```
+
+
+## Book a Chapter 4
+### 4.3
+```{r a4.3}
+hw26<-read.xls('Econhw2data2.xls',sheet = 2) #import data
+
+hpts<-ts(hw26$P,1980,2011,freq=4)  # time series of house price
+irts<-ts(hw26$R..in...,1980,2011,freq=4) # times series of interest rate
+diffhpts<-ts(diff(hw26$P),1980,2011,freq=4) # time series of difference in house price
+diffirts<-ts(diff(hw26$R..in...),1980,2011,freq=4) # time series of change in interest rate
+
+#acf & pacf of quarterly house price
+acf(hpts)
+pacf(hpts)
+
+#acf & pacf of interest rate
+acf(irts)
+pacf(irts)
+
+#acf & pacf of difference in house price
+acf(diffhpts)
+pacf(diffhpts)
+
+#acf & pacf of change in interest rate
+acf(diffirts)
+pacf(diffirts)
+
+# comparig with annual 
+hw27<-read_xls('Econhw2data2.xls',sheet = 1) #import data
+
+yhpts<-ts(hw26$P,1975,2011,freq=1)  # time series of house price
+yirts<-ts(hw26$R..in...,1975,2011,freq=1) # times series of interest rate
+ydiffhpts<-ts(diff(hw26$P),1975,2011,freq=1) # time series of difference in house price
+ydiffirts<-ts(diff(hw26$R..in...),1975,2011,freq=1) # time series of change in interest rate
+
+quartz()
+par(mfrow=c(2,2))
+acf(hpts)
+pacf(hpts)
+acf(yhpts)
+pacf(yhpts)
+
+quartz()
+par(mfrow=c(2,2))
+acf(irts)
+pacf(irts)
+acf(yirts)
+pacf(yirts)
+
+quartz()
+par(mfrow=c(2,2))
+acf(diffhpts)
+pacf(diffhpts)
+acf(ydiffhpts)
+pacf(ydiffhpts)
+
+quartz()
+par(mfrow=c(2,2))
+acf(diffirts)
+pacf(diffirts)
+acf(ydiffirts)
+pacf(ydiffirts)
+```
+<br> Summary: Acf of quarterly house price shows strong time dependence, since each lag reaches the significant level, which indicates a serial correlation. Acf of interest rate also shows strong time dependence, but not as strong as the acf of house price. It demonstrates a quicker decreasing trend compared to house price. The acf of change in house price does not show strong time dependency, it decays relatively significantly. The acf of change in interest rate does not show strong time depency, as after first two lags, no other lags reach the significant level. 
+<br> The yearly time series looks similar to the quarterly time series. In the annually house price and interest rate, the correlations between lags decay quicker as the number of lag increasing compared to the quarterly data. 
+
+
+```{r a4.4}
+
+# quaterly 
+x<-diffhpts
+#model with one lag
+modela=dynlm(x~L(x,1))
+#plot(modela)
+summary(modela)
+#model with two lag
+modelb=dynlm(x~L(x,1)+L(x,2))
+#plot(modelb)
+summary(modelb)
+#model with three lag
+modelc=dynlm(x~L(x,1)+L(x,2)+L(x,3))
+#plot(modelc)
+summary(modelc)
+#model with four lag
+modeld=dynlm(x~L(x,1)+L(x,2)+L(x,3)+L(x,4))
+#plot(modela)
+summary(modeld)
+
+AIC(modela,modelb,modelc,modeld)
+BIC(modela,modelb,modelc,modeld)
+
+#rolling scheme
+coeff<-list()
+num=1
+for(i in 40:length(x)-5)
+{
+ils <- subset(x,start=4+(i-39),end = 4+i ) # learning set
+its <- subset(x,start = 5+i,end=length(x)) # testing set
+mc<-dynlm(ils~L(ils,1)+L(ils,2)+L(ils,3))
+coeff[[num]]<-coef(mc)
+num=num+1
+}
+print(coeff)
+
+# #recursive scheme
+n=1
+coeff2<-list()
+ls<-subset(x,start=4,end=40)
+for(i in 4:89)
+{
+  ts<-subset(x,start=37+i,end=length(x))
+  mc2<-dynlm(ls~Lag(ls,1)+Lag(ls,2)+Lag(ls,3))
+  coeff2[[n]]<-coef(mc2)
+  p<-coef(mc2)[1]+coef(mc2)[2]*x[36+i]+coef(mc2)[3]*x[37+i]+coef(mc2)[4]*x[38+i]
+  ls<-c(ls,p)
+  n=n+1
+}
+print(coeff2) # print coefficient in each regression step
+
+
+```
+By comparing Adjusted-Rsquared, AIC and BIC, I am interested in using model c, that is with 3 lags. 
+
+
+```{r a4.8}
+hw28<-read_xls('Econhw2data2.xls',sheet = 3) #import data
+
+difpred <-hw28$`Actual RGDP Quarterly Growth (in %)`-hw28$`Greenbook RGDP Quarterly Growth Forecast (in %)`
+mean(difpred)
+
+# run on 5 lags
+t=6:152
+modelf=dynlm(difpred[t]~L(difpred[t],1)+L(difpred[t],2)+L(difpred[t],3)+L(difpred[t],4)+L(difpred[t],5))
+summary(modelf)
+
+```
+<br> Summary: The expected value of the forecast errors does not equal to zero, but near 0. The expectation of forecast error should be 0, otherwise this model is not appropriate. In this case, the 1-quarter-ahead forecasts of real gdp growth is not an optimal model to do the forecasting. 
+<br> For 5 lags regression, it shows a perfect fit on intercept and lag1, lag2 to lag5 are not useful in this regression. The p value of F-statistic is less than 2.2*10^-16. Hence the null hypothsis that beta_0 to beta_5 is zero can be rejected. 
+
+
+
+### C Chapter 
+##6.2
+```{r 6.2}
+library(Ecdat)
+
+# a 
+plot(plastics)
+
+# b 
+plasticts<-ts(plastics,1,5,frequency = 12)
+plasticts %>% decompose(type="multiplicative") %>%autoplot()
+splastics<-decompose(plasticts,"multiplicative")
+stlplastic <- stl(plasticts, s.window = "periodic")
+stlplastic # seasonal indices
+
+# d
+adplastics <- plasticts/splastics$seasonal
+plot(adplastics) # adjust plastics data
+
+#e
+p2<-plastics
+p2[20]<-plastics[20]+500
+p2ts<-ts(p2,1,5,frequency = 12)
+p2ts %>% decompose(type="multiplicative") %>%autoplot()
+psd<-decompose(p2ts,type="multiplicative")
+adp2<-seasadj(psd)
+plot(adp2)
+
+#f
+p3<-plastics
+p3[40]<-plastics[40]+500
+p3ts<-ts(p3,1,5,frequency = 12)
+psd3 <- decompose(p3ts, type='multiplicative')
+adp3 <- seasadj(psd3)
+plot(adp3)
+```
+<br> Sumamry: By observation, this time series has a seasonal cycle for each year in the plot. The result from part b supprt the result from part a. In part b, it has a upper trend with a yearly 
+<br> In e, the new outlier drives the seasonal adjusted time series to have a spike at the point we add 500. 
+<br> In f, no matter where the outlier exists, it will always generate similar spike but at different location, while other parts give the same result. 
+
+
+```{r 6.5}
+plot(cangas)
+
+#a
+plot(cangas,ylab = "billion cubic meters",xlab = "Year")
+ggsubseriesplot(cangas)
+ggseasonplot(cangas)
+
+#b
+stlc<- stl(cangas,s.window = 8)
+plot(stlc)
+
+#c
+x11c<- seas(cangas,x11="")
+seasc<- seas(cangas)
+plot(x11c,main="Original and Adjusted Series by using x11")
+plot(seasc,main="Original and Adjusted Series by using seats")
+plot(x11c,main="Original and Adjusted Series by using x11")
+plot(seasc,main="Original and Adjusted Series by using seats")
+
+```
+<br> Summary: In a, the trend of monthly Canadian gas production is increasing from 1960 to 2000, as time increases. From seasonal plot, the increasing rate in winter is higher than that in summer.Probaly it is much easier to produce gas in winter. 
+<br> In c, comparing x11 and seats decomposition: they have very closed seasonal and trend component, but share different residuals. 
+
+
+```{r 6.6}
+plot(bricksq)
+
+#a
+# stl with fixed seasonality
+fixstlb <- stl(bricksq,s.window = "periodic",robust = TRUE)
+# stl with changing seasonality
+changestlb <- stl(bricksq,s.window = 5,robust = TRUE)
+plot(fixstlb)
+plot(changestlb)
+
+#b
+#seasonal adjust for fixed seasonality
+adfixb <- seasadj(fixstlb)
+plot(adfixb)
+
+#seasonal adjust for chaning seasonality
+adchangeb<-seasadj(changestlb)
+plot(adchangeb)
+
+#c
+fixstlb %>% seasadj() %>% naive() %>% autoplot()   
+changestlb %>% seasadj() %>% naive() %>% autoplot()  
+## They have similar prediction
+
+#d
+stlfb <- stlf(bricksq)
+autoplot(stlfb)
+
+#e
+checkresiduals(stlfb)
+# the p value is less than 0.05, this time series is not white noise.
+
+#f
+stlfr <- stlf(bricksq, robust = TRUE)
+autoplot(stlfr)
+checkresiduals(stlfr)
+# There are not big difference btw standard stlf and robust stlf. the p value is less than 0.05, this time series is not white noise.
+
+#g
+library("ggplot2")
+trainset_brick <- subset(bricksq,end = length(bricksq) - 8)
+testset_brick <- subset(bricksq,start = length(bricksq) - 7)
+
+snaive_brick <- snaive(trainset_brick)
+stlf_brick_part <- stlf(trainset_brick, robust = TRUE)
+
+# plot data and forecast results
+autoplot(bricksq, series = "data") +
+  geom_line(size = 1) +
+  autolayer(stlf_brick_part, PI = FALSE, size = 1,series = "stlf") +
+  autolayer(snaive_brick, PI = FALSE, size = 1,series = "snaive") +
+  scale_color_manual(values = c("gray", "blue", "red"),
+                     breaks = c("data", "stlf", "snaive")) +
+  ggtitle("Forecast from stlf and snaive") +
+  annotate("rect",xmin=1992.75,xmax=1994.5,ymin=-Inf,ymax=Inf,
+    fill="yellow",alpha = 0.3)
+
+
+#Sumamry: These two methods are quite similar, from observation, stlf gives a better approximation. 
+
+```
+
